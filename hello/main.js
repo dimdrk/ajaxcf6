@@ -22,3 +22,17 @@ function fetchData() {
 
     xhr.send()
 }
+
+function handleResults(response) {
+    if (!response) return
+
+    buildResponse(response)
+}
+
+function buildResponse(response) {
+    $('#cf-text').text(response)
+}
+
+function showError() {
+    console.log('API Error')
+}
