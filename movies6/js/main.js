@@ -71,14 +71,91 @@ function buildImdbLink(response) {
     }
 }
 
-function buildMovie() {
-
+function buildMovie(response) {
+    if (response.poster) {
+        $('#image').attr('src', 'response.poster').on('load', function() {
+            buildMovieMetadata(response, $(this))
+        })
+    } else {
+        buildMovieMetadata(response)
+    }
 }
 
-function hideComponent() {
+function buildMovieMetadata(response, imageTag) {
+    hideComponent('#waiting')
+    handleImage(imageTag)
+    handleLiterals(response)
+    showMComponent('#movie')
+}
 
+function handleImage(imageTag) {
+    imageTag ? $('#image').replaceWith(imageTag) : ('#image').removeAttr('src')
+}
+
+function handleLiterals(response) {
+    $('#movie').find('[id]').each((index, item) => function() {
+        if ($(item).is('a')) {
+            $(item).attr('href', response[item.id])
+        } else {
+            let valueElement = $(item).children('span')
+            let metadataValue = response[item.id]
+
+            valueElement.length ? valueElement.text(metadataValue) : $(item).text(metadataValue)
+        }
+    })
+}
+
+function showMComponent(selector) {
+    return $(selector).clone().removeClass('hidden').appendTo($('.center'))
+}
+
+function hideComponent(selector) {
+    return $(selector).addClass('hidden')
 }
 
 function showNotFound() {
+    $('.not-found').clone().removeClass('hidden').appendTo($('.center'))
+}
 
+function hideNotFound() {
+    $('.center').find('.not-found').remove()
+}
+
+function showError() {
+    $('.error').clone().removeClass('hidden').appendTo($('.center'))
+}
+
+function hideError() {
+    $('.center').find('.error').remove()
+}
+
+function hideExtras() {
+    $('.extended').hide()
+}
+
+function collapsePlot() {
+    $('#plot').removeClass('expanded')
+}
+
+function onBeforeSend() {
+    showMComponent('#waiting')
+    hideComponent('#movie')
+    hideNotFound()
+    hideError()
+    collapsePlot()
+    hideExtras()
+}
+
+function onApiError() {
+    hideComponent('#waiting')
+    showError()
+}
+
+function onShowMoreClicked() {
+    $('#plot').toggleClass('expanded')
+    if ($('.extended').is(':visible')) {
+        $('.extended').hide(700)
+    } else {
+        $('.extended').show(700)
+    }
 }
