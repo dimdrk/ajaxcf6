@@ -56,7 +56,6 @@ function tranform(response) {
 }
 
 function camelCaseKeys(response) {
-    console.log('Find out')
     return _.mapKeys(response, (v, k) => _.camelCase(k))
 }
 
