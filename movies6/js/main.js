@@ -1,7 +1,7 @@
 $(function() {
     var debounceTimeout = null
 
-    $('#searchInput').on('input', function() {
+    $('searchInput').on('input', function() {
         clearTimeout(debounceTimeout)
         debounceTimeout = setTimeout(() => {
             getMovie(this.value.trim())
@@ -30,6 +30,8 @@ function fetchMovieFromApi(title) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 handleResults(JSON.parse(xhr.responseText))
+            } else {
+                onApiError()
             }
         }
     }
@@ -50,10 +52,11 @@ function tranform(response) {
     let camelCaseKeysResponse = camelCaseKeys(response)
     clearNotAvailableInformation(camelCaseKeysResponse)
     buildImdbLink(camelCaseKeysResponse)
-    return camelCaseKeysResponse0
+    return camelCaseKeysResponse
 }
 
-function camelCaseKeys() {
+function camelCaseKeys(response) {
+    console.log('Find out')
     return _.mapKeys(response, (v, k) => _.camelCase(k))
 }
 
@@ -66,10 +69,11 @@ function clearNotAvailableInformation(response) {
 }
 
 function buildImdbLink(response) {
-    if (response.imdbId && response.imdb !== 'N/A') {
-        response.imdbId = `https://www.imdb.com/title/${response.imdbId}/`
+    if (response.imdbId && response.imdbId !== 'N/A') {
+        response.imdbId = `https://www.imdb.com/title/${response.imdbId}`
     }
 }
+
 
 function buildMovie(response) {
     if (response.poster) {
@@ -81,11 +85,18 @@ function buildMovie(response) {
     }
 }
 
+
 function buildMovieMetadata(response, imageTag) {
     hideComponent('#waiting')
     handleImage(imageTag)
     handleLiterals(response)
-    showMComponent('#movie')
+    showComponent('#movie')
+}
+
+
+
+function hideComponent(selector) {
+    return $(selector).addClass('hidden')
 }
 
 function handleImage(imageTag) {
@@ -103,14 +114,6 @@ function handleLiterals(response) {
             valueElement.length ? valueElement.text(metadataValue) : $(item).text(metadataValue)
         }
     })
-}
-
-function showMComponent(selector) {
-    return $(selector).clone().removeClass('hidden').appendTo($('.center'))
-}
-
-function hideComponent(selector) {
-    return $(selector).addClass('hidden')
 }
 
 function showNotFound() {
@@ -137,8 +140,12 @@ function collapsePlot() {
     $('#plot').removeClass('expanded')
 }
 
+function showComponent(selector) {
+    return $(selector).clone().removeClass('hidden').appendTo($('.center'))
+}
+
 function onBeforeSend() {
-    showMComponent('#waiting')
+    showComponent('#waiting')
     hideComponent('#movie')
     hideNotFound()
     hideError()
