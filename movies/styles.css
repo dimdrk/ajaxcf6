@@ -20,7 +20,7 @@ body {
 input[type=text].search {
 	width: 200px;
 	height: 50px;
-	background-image: url('../img/search.png');
+	background-image: url('./img/search.png');
 	background-position: left;
 	background-repeat: no-repeat;
 	background-size: 45px 45px;
